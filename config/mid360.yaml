@@ -1,0 +1,350 @@
+#注意 当二级key相同的时候,需要把livo和r3live的参数设置为一致,否则会导致参数被覆盖的情况,因为只同步了二级目录的值
+common:
+  algo_type: 1 # 0: r3live 1: fast-livo2
+  img_topic: "/usb_cam_left/image_raw"
+  lid_topic: "/livox/lidar"
+  imu_topic: "/livox/imu"
+  full_camera_trajectory: "/home/kilox/wutong/loop_detect/camera_full_trajectory.txt"
+  img_en: 1
+  lidar_en: 1
+  ros_driver_bug_fix: false
+
+extrin_calib:
+  extrinsic_T: [0.0, 0.0, -0.0724]
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  Rcl: [0.647739,   -0.72039 ,  0.247938,
+        0.349309, -0.0083973,   -0.93697,
+        0.677066,   0.693519 ,    0.2462] 
+  Pcl: [0.037441, -0.0870225,-0.0769359]
+
+time_offset: 
+  imu_time_offset: 0.0
+  img_time_offset: 0.1
+  exposure_time_init: 0.0
+
+preprocess:
+  point_filter_num: 1
+  filter_size_surf: 0.1
+  lidar_type: 8 # Livox Avia LiDAR
+  scan_line: 4 #实际只有4条线
+  blind: 0.8
+
+vio:
+  max_iterations: 5
+  outlier_threshold: 1000 # 78 100 156 #100 200 500 700 infinite
+  img_point_cov: 1000 # 100 1000 
+  patch_size: 8
+  patch_pyrimid_level: 4
+  normal_en: true
+  raycast_en: false
+  inverse_composition_en: false
+  exposure_estimate_en: true
+  inv_expo_cov: 0.1
+
+imu:
+  imu_en: true
+  imu_int_frame: 30
+  acc_cov: 0.5 # 0.2
+  gyr_cov: 0.3 # 0.5
+  b_acc_cov: 0.0001 # 0.1
+  b_gyr_cov: 0.0001 # 0.1
+
+lio:
+  max_iterations: 5
+  dept_err: 0.02
+  beam_err: 0.05
+  min_eigen_value: 0.0025 # 0.005
+  voxel_size: 0.5
+  max_layer: 2
+  max_points_num: 50
+  layer_init_num: [5, 5, 5, 5, 5]
+
+local_map:  
+  map_sliding_en: true
+  half_map_size: 100
+
+  sliding_thresh: 8
+
+uav:
+  imu_rate_odom: false
+  gravity_align_en: true
+
+publish:
+  dense_map_en: true
+  pub_effect_point_en: false 
+  pub_plane_en: false
+  pub_scan_num: 1
+  blind_rgb_points: 0.0
+
+evo:
+  seq_name: "CBD_Building_01"
+  pose_output_en: false
+
+pcd_save:
+  pcd_save_en: false
+  colmap_output_en: false # need to set interval = -1
+  filter_size_pcd: 0.15
+  interval: -1
+  # how many LiDAR frames saved in each pcd file;
+  # -1 : all frames will be saved in ONE pcd file, may lead to memory crash when having too much frames.
+
+#===================================================r3live=============================================================
+IMU_topic: "/livox/imu"
+Lidar_front_end:
+   lidar_type: 8   #0 for MID, 1 for Livox-avia,2 for VELO16, 3 for Ouster-OS1-64,4 for AVIA_POINTCLOUD2(the avia lidar msg is pointcloud2),5 for ls_lidar 6 for hesai lidar
+   N_SCANS: 6
+   using_raw_point: 1
+   point_step: 1
+   is_indoor: 0
+   # peng city
+   #lidar_bag_name: "/home/kilox/pengcity/2022-05-23-11-46-52.bag"
+   #是否直接读取录制的包进行slam
+   # wutong
+   #lidar_bag_name: "/home/kilox/wutong/2022-05-20-13-57-15.bag"
+   #lidar_bag_name: "/media/kilox/zhangyj/r3live/wt/2022-05-20-13-57-15.bag"
+   #lidar_bag_name: "/home/kilox/pengcity/2022-08-15-13-54-51.bag"
+   #lidar_bag_name: "/media/kilox/093171DA4A4F2FDB/pengcity/2022-05-23-11-46-52.bag"
+   #lidar_bag_name: "/media/kilox/093171DA4A4F2FDB/2022-08-18-15-55-17.bag"
+   #lidar_bag_name: "/media/kilox/093171DA4A4F2FDB/pengcity/2022-05-23-11-46-52.bag"
+   #lidar_bag_name: "/home/kilox/pengcity/2022-05-23-11-46-52.bag"
+   #lidar_bag_name: "/home/kilox/qingyuan/outdoor/shiwai1.bag"
+   #lidar_bag_name: "/home/kilox/indoor_6/dataset/2022-11-07-16-13-41.bag"
+   lidar_bag_name: "/home/kilox/wutong/500kV001.bag"
+   #是否采用直接读取包的方式，1 or 0
+   use_bag_file: 0
+   #是否推送图像信息，可选 1 or 0
+
+   use_bag_file_publish_image: 1
+   #是否使用apriltag
+   use_apriltag: 0
+   #detect type: tag36h11  tag16h5  tag25h9  tagCircle21h7  tagCircle49h12  tagStandard41h12  tagStandard52h13  tagCustom48h12
+   apriltag_detect_type: "tag36h11"
+   #apriltag size ,unit: m
+   apriltag_tag_size: 0.162
+   apriltag_fx: 1209.989503597037
+   apriltag_fy: 1208.996402923181
+   apriltag_cx: 756.2156986595387
+   apriltag_cy: 617.7249667203519
+
+   has_motor: 0
+   init_angle: 0
+   blind: 0.8
+
+   
+r3live_common:
+   if_dump_log: 0                   # If recording ESIKF update log. [default = 0]
+   record_offline_map: 0            # If recording offline map. [default = 1]
+   pub_pt_minimum_views: 3          # Publish points which have been render up to "pub_pt_minimum_views" time. [default = 3]
+   #minimum_pts_size: 0.1           # The minimum distance for every two points in Global map (unit in meter). [default = 0.01]
+   minimum_pts_size: 0.01           # The minimum distance for every two points in Global map (unit in meter). [default = 0.01]
+   image_downsample_ratio: 1        # The downsample ratio of the input image. [default = 1]
+   estimate_i2c_extrinsic: 0      # If enable estimate the extrinsic between camera and IMU. [default = 1]
+   estimate_intrinsic: 0            # If enable estimate the online intrinsic calibration of the camera lens. [default = 1]
+   maximum_vio_tracked_pts: 600     # The maximum points for tracking. [default = 600]
+   append_global_map_point_step: 4  # The point step of append point to global map. [default = 4]
+   #是否采用纯保存方式
+   use_pure_odom: 0
+   #纯视觉方式的点的大小，在全局地图当中两个点之间的距离
+   pure_odom_minimum_pts_size: 0.1
+   pur_odom_voxel_size: 0.1
+   #esikf_iter_times: 2
+   calib_rgb_path: "/home/kilox/wutong/calibrate/calibration.bmp"
+   calib_pcd_path: "/home/kilox/wutong/calibrate/calibrate.pcd"
+
+
+r3live_vio:
+   image_width: 1280
+   image_height: 720
+   m_current_veclocity_max_t: 0.1
+   m_current_veclocity_max_q: 0.1
+   camera_intrinsic:
+     [ 407.80484861445564, 0, 632.08699751056474,
+       0,  407.48737856426152, 359.71841305626737,  
+       0, 0, 1 ]
+   camera_dist_coeffs: [ 0.23363539987434842, 0.47554734377132096,-0.44703301123739236, 0.16168919680400098,0 ]  #k1, k2, p1, p2, k3
+
+   recon_type: "mst_v2"
+   left_camera_intrinsic:
+     [ 407.80484861445564, 0, 632.08699751056474,
+       0,  407.48737856426152, 359.71841305626737,
+        0, 0, 1  ]
+   left_camera_dist_coeffs: [ 0.23363539987434842, 0.47554734377132096,-0.44703301123739236, 0.16168919680400098,0]  #k1, k2, p1, p2, k3
+
+   right_camera_intrinsic:
+     [ 408.41115105924422, 0, 663.70743635875328,
+       0, 408.41811800946346, 371.03510382822384,
+       0, 0, 1 ]
+   right_camera_dist_coeffs: [0.23292961680549848, 0.49068225898209061,-0.46532288816577438, 0.16747237289966915,0  ]  #k1, k2, p1, p2, k3
+
+     #camera to imu,   camera -> imu
+     # Fine extrinsic value. form camera-LiDAR calibration.
+     # [ 0.0116446,-0.99988,-0.0101986,
+     # 0.00824886,0.010295,-0.999913,
+     # 0.999898,0.0115594,0.00836775 ]
+     #  camera_ext_R:
+     #      [-0.0456046,0.00594038,0.998942,
+     #      -0.998838,0.0153029,-0.0456909,
+     #      -0.0155582,-0.999865,0.0052356
+     #     ]
+
+   # ---------------current--------------
+     #camera_ext_R:
+     #    [ 0.0080922,-0.00972974,0.99992,
+     #       -0.999826,0.0167574,0.00825449,
+     #     -0.0168363,-0.999812,-0.00959244
+   #  ]
+   #camera_ext_t: [0.036047,-0.0480077,-0.00147811]
+
+     #camera_ext_R:
+     #     [ 0.00013747,0.00134042,0.999999,
+     #      -0.999883 ,0.0153059,0.000116908,
+     #      -0.0153057,-0.999882,0.00134239
+   #   ]
+   #camera_ext_t: [ -0.105668,0.0413461,-0.0841164 ]
+
+     #camera_ext_R:
+     #  [ -0.00788479,-0.0139626,0.999871,
+     #    -0.999866,0.0144543,-0.0076829,
+     #    -0.0143452,-0.999798,-0.0140747
+   #  ]
+   #camera_ext_t: [ -0.0142077,0.0503411,0.012089 ]
+
+   #横放的设备外参 camera to imu
+   camera_ext_R:
+       [ 0.656634, 0.349963  ,  0.6681,
+         -0.71132,  -0.0071014,   0.702832,
+         0.250711 , -0.936737 , 0.244273
+           ]
+   camera_ext_t: [0.0702492,0.0533169,-0.141899]
+   #竖直的设备外参
+     #camera_ext_R:
+     #    [ -0.55424,  0.0556095,  0.830497,
+     #      -0.832186, -0.0168201 , -0.554241,
+     #      -0.016852, -0.998311,   0.0555998
+   # ]
+   #camera_ext_t: [ -0.0104756, 0.045285, -0.111533 ]
+   #竖直的设备外参
+     #lidar_to_imu_ext_R:
+     #        [  0.999099,  0.035427, 0.023355,
+     #            -0.031117,  0.237489,  0.970892,
+   #   0.028849, -0.970744,  0.238378
+   #]
+     #lidar_to_imu_ext_t: [0.009600, 0.131810,0.151724]
+
+   #横放的设备外参
+   lidar_to_imu_ext_R:
+           [ 1,0,0,
+             0,1,0,
+             0,0,1
+   ]
+   lidar_to_imu_ext_t: [0.0, 0.0, -0.0724]
+
+   #lidar to left camera
+   left_camera_ext_R:
+     [0.647739,   -0.72039 ,  0.247938,
+      0.349309, -0.0083973,   -0.93697,
+      0.677066,   0.693519 ,    0.2462
+     ]
+   left_camera_ext_t: [ 0.037441, -0.0870225,-0.0769359]
+
+   #lidar to right camera
+   right_camera_ext_R:
+     [ -0.655464,  -0.691908,  -0.242856,
+       0.33752, 0.012026, -0.930832,
+       0.650996,  -0.70826, 0.244267
+     ]
+   right_camera_ext_t: [ -0.0466328, -0.069168, -0.0667266]
+   #camera_ext_t: [ -0.0,-0,-0.0]
+   # ---------------before--------------
+     #camera_ext_R:
+   #  [ -0.0192527,  0.00741335,    0.999787,
+         #     -0.999801,  0.00501793,  -0.0192902,
+         #     -0.00515987,    -0.99996,  0.00731526
+         #          ]
+   #camera_ext_t: [0,0,0]
+
+   #camera_ext_t: [0.050166, 0.0474116, -0.0312415]
+   #camera_ext_t: [-0.0547343,-0.0586234,0.0149073]
+   #camera_ext_t: [0.157432,0.0390549,0.0448609]
+
+   # Rough extrinsic value, form CAD model, is not correct enough, but can be online calibrated in our datasets.
+   # camera_ext_R:
+   #    [0, 0, 1,
+   #     -1, 0, 0,
+   #     0, -1, 0]
+   #camera_ext_t: [-0.0267126,-0.0730598,-0.0163743]
+
+   
+r3live_lio:        
+   lio_update_point_step: 1   # Point step used for LIO update.
+   max_iteration: 4         # Maximum times of LIO esikf.
+   lidar_time_delay: 0    # The time-offset between LiDAR and IMU, provided by user.
+   filter_size_corner: 0.3
+   filter_size_surf: 0.1
+   filter_size_surf_z: 0.3
+   #voxel_downsample_size_axis_z: 0.05
+   #特征点距离kdtree的距离大于了这个值则不选用这样的特征点
+   #maximum_pt_kdtree_dis: 5
+
+   #kdree 下采样点的分辨率 原始:0.3
+   filter_size_map: 0.3
+   #存储闭环检测包的名称
+   #lidar_loop_bag_name: "/home/kilox/pengcity/loop_detect_2022-05-23-11-46-52.bag"
+   lidar_loop_bag_name: "/home/kilox/wutong/loop_detect_2022-05-20-13-57-15.bag"
+   #是否写入闭环检测包 1：写入 0：不写入
+   write_loop_bag: 1
+   #控制图像的帧率， <=0：不控制 大于0进行控制  控制有利于减少内存占用，不控制优化的位姿效果更好
+   control_image_rate: 0
+   #是否使用原始的不含图像优化结果的图像位姿，只采用雷达的计算结果，较准确
+   use_source_lidar_pose: 1
+   #full_camera_trajectory: "/home/kilox/pengcity/camera_full_trajectory.txt"
+   #相机的里程计轨迹写入地址
+   #full_camera_trajectory: "/home/kilox/pengcity/camera_full_trajectory.txt"
+   full_camera_trajectory: "/home/kilox/wutong/loop_detect/camera_full_trajectory.txt"
+
+   #所有的特征点组成的稀疏地图是否推送 1 or 0
+   publish_feature_map: 1
+   #是否使用icp优化 1 是 ,0 否
+   use_icp_optimize: 0
+   #增加更多的点，将异常点的权重给降低，从而提升鲁邦性
+   #maximum_res_dis: 0.1
+   #特征面点下采样的大小 source 0.3  0.4 could deal with this problem
+   #降低异常点的数量也是一种方式
+   #voxel_downsample_size_surf: 0.4
+   #加入vio处理该问题
+   max_layer_pv: 2 #构建平面的最少点数需要多少
+   max_points_size_pv: 1000 #那个区域超过多少点就不会进行平面更新了
+   min_eigen_value_pv: 0.01
+   max_voxel_size_pv: 0.25 #0.5 这个可以应对很多场景  0.25 这个可以用于大多数场景 0.5在楼梯处不行，匹配的特征点错误的平面太多
+   downsample_size_pv: 0.2 #0.1                     0.2
+   
+   loopdetect_enable: 1 #是否使能回环 1使能 0不使能  再增加一个模式,是只要最后一次回环
+   loopdetect_enable_just_final: 0 #是否仅进行最后一次回环 0: 不是 1:是(只进行最后一次回环)
+   #以上参数(1 0) -> 开启所有回环   (0 1) -> 开启最后一次回环 (0 0) -> 关闭所有回环 (1,1)->也是开启所有回环
+
+   use_first_localization_constraint: 0 #是否使用初始位置约束 默认不打开,只有在建图当中行走历程特别长(100米以上),导致里程计误差特别大的情况下才需要开启
+
+   loopdetect_scale: 1.0 #回环检测模块的缩放比率,这个值越大,点云越密集,需要的内存也越多
+   map_icp_teaser_scale: 30 #这个值越大,对于大场景的点云配准效果越好,越小,例如10,对于小场景小物体的配准越好 超大场景可以用30/60
+   use_map_icp_teaser: 0 #是否使用teaser配准 1:使用 0:不使用
+
+   downSizeFilterMap_loopdetect_ds: 0.05 # 回环检测每一个关键帧存储的时候的降采样率
+   surroundingkeyframeAddingAngleThreshold: 0.2 #关键帧的旋转:rad -> 除以loopdetect_scale
+   surroundingkeyframeAddingDistThreshold: 0.5 #关键帧的位移: 米 -> 除以loopdetect_scale
+   min_pos_keyframe_color_cloud: 0.25 # unit: 米(剔除重复值) -> 除以loopdetect_scale
+   min_rot_keyframe_color_cloud: 10 # unit: °(剔除重复关键帧的角度) -> 除以loopdetect_scale
+
+   historyKeyframeSearchNum_target: 40 #多少个关键帧组成target子地图 -> 乘以loopdetect_scale
+   historyKeyframeSearchNum_source: 20 #多少个关键帧组成source子地图 -> 乘以loopdetect_scale
+   historyKeyframeSearchNum_target_finish: 20 #多少个关键帧组成target子地图 -> 乘以loopdetect_scale
+   historyKeyframeSearchNum_source_finish: 20 #多少个关键帧组成source子地图 -> 乘以loopdetect_scale
+
+   last_loop_detect_time_diff_threshold: 60 #距离上一次回环的时间间隔,超过这个间隔再进行下一次回环检测,单位: s
+   ld_inlier_value: 0.4 #icp匹配成绩为多少时认为匹配成功,这个用于中间的运行过程中的回环检测
+   ld_inlier_value_finish: 0.4 #icp匹配成绩为多少时认为匹配成功,这个是用于最后一次回环检测
+
+   ld_historyKeyframeSearchRadius: 2 #下一次回到相同的地方距离多近算可以进行回环检测 单位米
+   ld_historyKeyframeSearchTimeDiff: 60 #单位秒,当回到相同的地方时判断之前的关键帧与当前的时间间隔超过多少秒才认为是一个回环
+calib_param:
+   #外参搜索范围
+   test_range: 30

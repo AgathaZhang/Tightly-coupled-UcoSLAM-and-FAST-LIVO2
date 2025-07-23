@@ -1,0 +1,16 @@
+# 请求部分
+sensor_msgs/Image image
+float64 img_time
+float64 x
+float64 y
+float64 z
+float64 qx
+float64 qy
+float64 qz
+float64 qw
+std_msgs/Int32 is_loop
+string img_name
+string path
+---
+# 响应部分
+float64 img_time_result
